@@ -1,1 +1,28 @@
+name: Build ConsAppMo.exe
 
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les outils
+        run: pip install psutil pyinstaller
+
+      - name: Compiler en .exe
+        run: pyinstaller --onefile --name ConsAppMo --add-data "ConsAppMo.html;." consappmo_agent.py
+
+      - name: Publier le .exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: ConsAppMo-exe
+          path: dist/ConsAppMo.exe
