@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ConsAppMo</title>
+<style>
+:root{--bg:#0b0f24;--pn:#131a38;--ln:#232c55;--ink:#eef1ff;--mut:#8d98c4;--a:#35e0ff;--pk:#ff5fa2;--b:#ffb020;--c:#ff5d73;--acc:#7d6bff;--sh:0 10px 30px rgba(0,0,0,.35)}
+@media(prefers-color-scheme:light){:root{--bg:#f2f3fb;--pn:#fff;--ln:#dcdff0;--ink:#121634;--mut:#5d6590;--a:#0a9fc4;--pk:#e0357f;--acc:#5d48f0;--sh:0 8px 24px rgba(40,50,120,.12)}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Avenir Next","Segoe UI",Roboto,system-ui,sans-serif}
+main{max-width:520px;margin:0 auto;padding:16px 14px 150px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{display:flex;align-items:flex-end;gap:3px;height:24px}
+.logo i{width:6px;border-radius:2px;background:var(--a)}
+.logo i:nth-child(1){height:9px}.logo i:nth-child(2){height:16px;background:var(--acc)}.logo i:nth-child(3){height:24px;background:var(--pk)}
+h1{margin:0;font-size:1.35rem;font-weight:800;letter-spacing:-.02em}
+h1 b{color:var(--a)}
+.pill{font-size:.8rem;padding:5px 11px;border-radius:99px;background:var(--pn);border:1px solid var(--ln);color:var(--mut)}
+.pill.on{color:var(--a)}.pill.off{color:var(--c)}
+.pn{background:var(--pn);border:1px solid var(--ln);border-radius:24px;padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
+h2{font-size:.78rem;margin:0 0 12px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+svg{display:block;width:100%}
+#arc{transition:stroke-dashoffset .25s;filter:drop-shadow(0 0 5px rgba(125,107,255,.6))}
+#needle{transform-origin:150px 150px;transition:transform .25s}
+.read{text-align:center;margin-top:8px}
+.read b{display:block;font-size:3.8rem;font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.read span{color:var(--mut)}
+.phase{text-align:center;margin:14px 0 0;color:var(--mut);min-height:1.5em}
+.phase.err{color:var(--c)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.tile{background:var(--bg);border-radius:16px;padding:12px 6px;text-align:center}
+.tile b{display:block;font-size:1.2rem;font-variant-numeric:tabular-nums}
+.tile small{color:var(--mut);font-size:.75rem}
+#rRx{color:var(--a)}#rTx,#up{color:var(--pk)}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn{border:1px solid var(--ln);background:transparent;border-radius:16px;padding:13px;font-weight:700}
+.btn.main{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.live{background:var(--a);border-color:var(--a);color:#04202a}
+.btn:disabled{opacity:.5}
+.line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px solid var(--ln)}
+.line:last-of-type{border:0}
+.line b{font-size:1.4rem;font-variant-numeric:tabular-nums}
+.note{color:var(--mut);font-size:.85rem;margin:10px 0 0}
+label{display:block;font-size:.8rem;color:var(--mut);margin-bottom:3px}
+input,select{width:100%;padding:10px;border:1px solid var(--ln);border-radius:12px;background:var(--bg)}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.g2{display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:10px}
+.meter{height:14px;background:var(--bg);border-radius:8px;overflow:hidden;margin:10px 0 6px}
+.meter i{display:block;height:100%;width:0;background:var(--st,var(--a));border-radius:8px;transition:width .3s}
+.bigtot b{font-size:2.6rem;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.bigtot span{color:var(--mut);margin-left:8px}
+.src{margin-bottom:14px}.src div{display:flex;justify-content:space-between;gap:8px}.src i{display:block;height:9px;border-radius:5px;margin-top:5px}
+ul{list-style:none;margin:0;padding:0}
+li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--ln)}
+li small{display:block;color:var(--mut)}
+li button{border:0;background:transparent;color:var(--c);padding:6px}
+.acts{display:flex;gap:8px;margin-top:12px}.acts .btn{flex:1;padding:10px}
+details{margin-top:10px;color:var(--mut);font-size:.9rem}
+.nav{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--pn);border-top:1px solid var(--ln);padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:5}
+.nav button{height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;background:transparent;color:var(--mut);font-size:.74rem;font-weight:600;border-radius:14px}
+.nav button.act{color:var(--acc);background:var(--bg)}
+.nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sign{position:fixed;left:0;right:0;bottom:calc(66px + env(safe-area-inset-bottom));height:32px;overflow:hidden;background:var(--bg);border-top:1px solid var(--ln);z-index:4;pointer-events:none}
+.sign span{position:absolute;top:0;left:0;white-space:nowrap;font:italic 700 1.15rem/32px "Segoe Script","Brush Script MT","Snell Roundhand",cursive;color:var(--pk);animation:rl 9s linear infinite}
+@keyframes rl{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
+@media(prefers-reduced-motion:reduce){.sign span{animation:none;position:static;display:block;text-align:center}}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<header><div class="brand"><span class="logo"><i></i><i></i><i></i></span><h1>Cons<b>App</b>Mo</h1></div><span class="pill" id="net">…</span></header>
+
+<div id="v1">
+  <div class="pn">
+    <svg viewBox="-14 0 328 172" role="img" aria-label="Compteur de vitesse">
+      <defs><linearGradient id="gr" x1="0" x2="1"><stop offset="0" stop-color="#35e0ff"/><stop offset=".6" stop-color="#7d6bff"/><stop offset="1" stop-color="#ff5fa2"/></linearGradient></defs>
+      <path d="M30 150A120 120 0 0 1 270 150" fill="none" stroke="var(--ln)" stroke-width="14" stroke-linecap="round" pathLength="100"/>
+      <path id="arc" d="M30 150A120 120 0 0 1 270 150" fill="none" stroke="url(#gr)" stroke-width="14" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/>
+      <g id="ticks" fill="var(--mut)" font-size="9" text-anchor="middle"></g>
+      <g id="needle" style="transform:rotate(-90deg)"><line x1="150" y1="150" x2="150" y2="62" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/><circle cx="150" cy="150" r="7" fill="var(--ink)"/></g>
+    </svg>
+    <div class="read"><b id="spd">0</b><span><span id="spdU">Ko/s</span> <span id="dir">en réception</span></span></div>
+    <p class="phase" id="phase" aria-live="polite">Prêt à mesurer</p>
+    <div class="tiles" style="display:none">
+      <div class="tile"><b id="up">–</b><small>Envoi</small></div>
+      <div class="tile"><b id="ping">–</b><small>Latence (ms)</small></div>
+      <div class="tile"><b id="cons">0 o</b><small>Conso. tests</small></div>
+    </div>
+    <div class="g2" style="display:none"><div><label for="size">Test complet</label><select id="size"><option value="2000000">2 Mo</option><option value="5000000" selected>5 Mo</option><option value="10000000">10 Mo</option><option value="25000000">25 Mo</option></select></div><div><label for="every">Mesure continue</label><select id="every"><option value="2">toutes les 2 s</option><option value="5" selected>toutes les 5 s</option><option value="10">toutes les 10 s</option><option value="30">toutes les 30 s</option></select></div></div>
+    <div class="btns" style="display:none"><button class="btn main" id="go">Test de vitesse (consomme des données)</button><button class="btn" id="live">Mesure continue</button></div>
+  </div>
+  <div class="pn">
+    <h2>Trafic réel</h2>
+    <div class="tiles" style="margin-top:0">
+      <div class="tile"><b id="rRx">–</b><small>Réception</small></div>
+      <div class="tile"><b id="rTx">–</b><small>Envoi</small></div>
+      <div class="tile"><b id="rB">0 o</b><small>Consommé</small></div>
+    </div>
+    <div class="g2" style="grid-template-columns:1fr"><div><label for="ifc">Carte réseau</label><select id="ifc"><option value="">Toutes les cartes</option></select></div></div>
+    <details id="adv"><summary>Réglages avancés (PC)</summary><div style="margin-top:10px"><label for="agent">Adresse de l’agent</label><input id="agent"></div></details>
+    <button class="btn main" id="rbtn" style="width:100%;display:none">Suivre le trafic réel</button>
+    <p class="note" id="rnote">Suivi automatique au lancement.</p>
+  </div>
+  <div class="pn">
+    <h2>Évolution de la vitesse</h2>
+    <svg viewBox="0 0 300 60" id="spark" preserveAspectRatio="none" style="height:60px"><polyline id="pl" fill="none" stroke="var(--a)" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>
+    <p class="note" id="sparkNote">Lancez un test pour voir la courbe.</p>
+  </div>
+  <div class="pn">
+    <h2>Données utilisées par les mesures</h2>
+    <div class="line"><span>Depuis l’ouverture</span><b id="dSes">0 o</b></div>
+    <div class="line"><span>Total des tests</span><b id="dTot">0 o</b></div>
+    <div class="line"><span>Débit estimé par le navigateur</span><b id="est" style="font-size:1rem">–</b></div>
+    <p class="note">Comptage en direct des octets réellement reçus et envoyés par les tests de cette page, sans les en-têtes réseau (1 à 3 % de plus environ). Une page web ne voit pas ce que consomment les autres appareils de votre partage : pour cela, relevez le compteur du téléphone dans l’onglet Consommation.</p>
+    <div class="acts"><button class="btn" id="zero">Remettre le total à zéro</button></div>
+  </div>
+</div>
+
+<div id="v2" hidden>
+  <div class="pn" id="wpn">
+    <h2>Téléchargement en direct <span id="wname" class="note"></span></h2>
+    <div class="bigtot"><b id="wTot">0 o</b><span>consommés (mesure réelle)</span></div>
+    <div class="tiles"><div class="tile"><b id="wRx">–</b><small>Vitesse de téléchargement</small></div><div class="tile"><b id="wTx">–</b><small>Vitesse d’envoi</small></div></div>
+    <p class="note" id="wnote">Allez dans l’onglet Vitesse et touchez « Suivre le trafic réel » pour activer la mesure.</p>
+    <p class="note">Mesuré automatiquement sur la carte Wi-Fi du PC, toutes applications comprises.</p>
+  </div>
+  <div class="pn">
+    <h2>Consommé par les autres sources</h2>
+    <div class="bigtot"><b id="tot2">0 o</b><span>au total</span></div>
+    <div style="height:14px"></div>
+    <div id="src"></div>
+    <p class="note">Pour ajouter une source, ouvrez l’onglet Paramètres. Le trafic mesuré par ConsAppMo reste dans l’onglet Vitesse.</p>
+  </div>
+</div>
+<div id="v3" hidden>
+  <div class="pn">
+    <h2>Forfait et quota</h2>
+    <div class="line"><b id="used">0 Mo</b><span id="of"></span></div>
+    <div class="meter"><i id="bar"></i></div>
+    <div id="status"></div>
+    <details><summary>Régler le forfait</summary>
+      <div class="g3" style="margin-top:10px"><div><label for="qv">Quota</label><input id="qv" inputmode="decimal"></div><div><label for="qu">Unité</label><select id="qu"><option>Go</option><option>Mo</option></select></div><div><label for="qa">Alerte (%)</label><input id="qa" inputmode="numeric"></div></div>
+    </details>
+  </div>
+  <div class="pn">
+    <h2>Ajouter une consommation</h2>
+    <div class="g2"><div><label for="dev">Appareil ou application</label><input id="dev" list="devs" autocomplete="off" placeholder="Ex. : PC, YouTube"><datalist id="devs"></datalist></div><div><label for="unit">Unité</label><select id="unit"><option>Mo</option><option>Go</option></select></div></div>
+    <div class="g3"><div><label for="bf">Compteur avant</label><input id="bf" inputmode="decimal"></div><div><label for="af">Compteur après</label><input id="af" inputmode="decimal"></div><div><label for="am">Quantité</label><input id="am" inputmode="decimal"></div></div>
+    <button class="btn main" id="add" style="width:100%">Ajouter</button>
+    <p class="note" id="msg"></p>
+    <details><summary>Où lire le compteur ?</summary><p>Android : Paramètres, Réseau, Utilisation des données, Point d’accès. iPhone : Réglages, Données cellulaires, Partage de connexion. Avec les deux compteurs, la quantité se calcule seule.</p></details>
+  </div>
+  <div class="pn">
+    <h2>Historique</h2>
+    <ul id="hist"></ul>
+    <div class="acts"><button class="btn" id="csv">Exporter CSV</button><button class="btn" id="reset">Nouvelle période</button></div>
+  </div>
+</div>
+</main>
+
+<nav class="nav" role="tablist">
+  <button class="act" id="t1" role="tab"><svg viewBox="0 0 24 24"><path d="M4 17a8 8 0 0 1 16 0"/><path d="M12 17l4-6"/></svg>Vitesse</button>
+  <button id="t2" role="tab"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Consommation</button>
+  <button id="t3" role="tab"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Paramètres</button>
+</nav>
+<div class="sign" aria-label="Signature : Sossou Constant"><span>Sossou Constant</span></div>
+<script>
+(function(){
+var K='consappmo_v2',U='https://speed.cloudflare.com/';
+var S={tot:0,real:0,qv:10,qu:'Go',qa:80,entries:[]};
+try{var o=JSON.parse(localStorage.getItem(K)||'null');if(o)for(var k in o)S[k]=o[k];}catch(e){}
+function save(){try{localStorage.setItem(K,JSON.stringify(S));}catch(e){}}
+function $(i){return document.getElementById(i);}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function num(v){return parseFloat(String(v).replace(',','.'));}
+function f1(v){return v.toFixed(1).replace('.',',');}
+function fmtB(b){if(b<1000)return Math.round(b)+' o';if(b<1e6){var k=b/1000;return (k<100?k.toFixed(1):''+Math.round(k)).replace('.',',')+' Ko';}if(b<1e9){var m=b/1e6;return (m<10?m.toFixed(2):m.toFixed(1)).replace('.',',')+' Mo';}return (b/1e9).toFixed(2).replace('.',',')+' Go';}
+function fmtM(m){return m>=1000?(m/1000).toFixed(2).replace('.',',')+' Go':Math.round(m)+' Mo';}
+function pad(n){return n<10?'0'+n:''+n;}
+
+/* Onglets */
+function tab(n){for(var i=1;i<=3;i++){$('v'+i).hidden=i!==n;$('t'+i).className=i===n?'act':'';}window.scrollTo(0,0);}
+$('t1').onclick=function(){tab(1);};$('t2').onclick=function(){tab(2);};$('t3').onclick=function(){tab(3);};
+
+/* État de la connexion */
+var C=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+function rate(b){
+  if(b<1000)return [String(Math.round(b)),'o/s'];
+  if(b<1e6){var k=b/1000;return [(k<100?k.toFixed(1):''+Math.round(k)).replace('.',','),'Ko/s'];}
+  var m=b/1e6;return [(m<10?m.toFixed(2):m.toFixed(1)).replace('.',','),'Mo/s'];
+}
+function rs(b){return rate(b).join(' ');}
+var PCW={wifi:false,ssid:''};
+function wifiState(){
+  if(window.ConsAppNative&&window.ConsAppNative.wifi){try{return JSON.parse(window.ConsAppNative.wifi());}catch(e){}}
+  return PCW;
+}
+function netInfo(){
+  var p=$('net'),on=navigator.onLine;
+  var kind=C?(C.type&&C.type!=='unknown'?C.type:C.effectiveType):'';
+  var names={wifi:'Wi-Fi',cellular:'mobile',ethernet:'Ethernet'},W=wifiState();
+  if(W.wifi)p.textContent=on?'En ligne, connecté sur : '+(W.ssid||'Wi-Fi'):'Hors ligne';
+  else p.textContent=on?'En ligne'+(kind?', '+(names[kind]||kind):''):'Hors ligne';
+  p.className='pill '+(on?'on':'off');
+  $('est').textContent=C&&C.downlink?rs(C.downlink*125000):'Indisponible';
+}
+window.addEventListener('online',netInfo);window.addEventListener('offline',netInfo);
+if(C&&C.addEventListener)C.addEventListener('change',netInfo);
+netInfo();setInterval(netInfo,3000);
+
+/* Jauge en octets par seconde */
+var ticks=$('ticks');
+function frac(b){return Math.min(1,Math.log10(1+b/1000)/Math.log10(25001));}
+[[0,'0'],[1e5,'100 Ko'],[1e6,'1 Mo'],[5e6,'5 Mo'],[25e6,'25 Mo']].forEach(function(t){
+  var a=Math.PI*(1-frac(t[0])),e=document.createElementNS('http://www.w3.org/2000/svg','text');
+  e.setAttribute('x',150+138*Math.cos(a));e.setAttribute('y',153-138*Math.sin(a));e.textContent=t[1];ticks.appendChild(e);
+});
+function gauge(b){
+  var f=frac(b),r=rate(b);
+  $('arc').style.strokeDashoffset=100-f*100;$('needle').style.transform='rotate('+(-90+f*180)+'deg)';
+  $('spd').textContent=r[0];$('spdU').textContent=r[1];
+}
+
+/* Données comptées en direct */
+var ses=0,raf=0;
+function showData(){
+  if(raf)return;
+  raf=requestAnimationFrame(function(){raf=0;
+    $('dSes').textContent=fmtB(ses);$('dTot').textContent=fmtB(S.tot);$('cons').textContent=fmtB(ses);renderQ();});
+}
+function addB(n){if(n>0){ses+=n;S.tot+=n;showData();}}
+$('zero').onclick=function(){S.tot=0;S.real=0;$('rB').textContent='0 o';save();showData();};
+window.addEventListener('pagehide',save);
+showData();
+
+/* Courbe */
+var sp=[];
+function spark(v,real){
+  if(R.on&&!real)return;
+  sp.push(v);if(sp.length>40)sp.shift();
+  if(sp.length<2)return;
+  var m=Math.max.apply(null,sp)||1;
+  $('pl').setAttribute('points',sp.map(function(x,i){return (i/(sp.length-1)*300).toFixed(1)+','+(56-x/m*50).toFixed(1);}).join(' '));
+  $('sparkNote').textContent='Dernière mesure : '+rs(v)+', maximum : '+rs(m)+'.';
+}
+
+/* Mesures */
+function phase(t,err){var p=$('phase');p.textContent=t;p.className='phase'+(err?' err':'');}
+function dir(t){$('dir').textContent=t;}
+async function ping(){
+  var a=[];
+  for(var i=0;i<6;i++){var t=performance.now();await fetch(U+'__down?bytes=0&r='+Date.now(),{cache:'no-store'});a.push(performance.now()-t);}
+  a.shift();return Math.min.apply(null,a);
+}
+async function down(bytes,ms){
+  var ac=new AbortController(),to=setTimeout(function(){ac.abort();},ms);
+  var got=0,t0=0,tl=0,gl=0,sm=0,first=0,tEnd=0,tf=performance.now();
+  try{
+    var r=await fetch(U+'__down?bytes='+bytes+'&r='+Date.now(),{cache:'no-store',signal:ac.signal});
+    var rd=r.body.getReader();
+    for(;;){
+      var x=await rd.read();if(x.done)break;
+      var n=x.value.length,now=performance.now();addB(n);
+      if(!t0){t0=tl=now;first=n;gl=n;continue;}
+      got+=n;tEnd=now;
+      if(now-tl>150){var inst=(got+first-gl)/((now-tl)/1000);sm=sm?sm*.5+inst*.5:inst;gauge(sm);tl=now;gl=got+first;}
+    }
+  }catch(e){if(!(e&&e.name==='AbortError')||!got)throw e;}
+  clearTimeout(to);
+  if(!t0||tEnd<=t0)return sm||(first?first/Math.max(.01,(performance.now()-tf)/1000):0);
+  return got/((tEnd-t0)/1000);
+}
+function up(bytes){
+  return new Promise(function(res,rej){
+    var x=new XMLHttpRequest(),t0=0,tl=0,lb=0,prev=0,sm=0;
+    x.open('POST',U+'__up');x.timeout=20000;
+    x.upload.onprogress=function(e){
+      var now=performance.now();addB(e.loaded-prev);prev=e.loaded;
+      if(!t0){t0=tl=now;lb=e.loaded;return;}
+      if(now-tl>150){var inst=(e.loaded-lb)/((now-tl)/1000);sm=sm?sm*.5+inst*.5:inst;gauge(sm);tl=now;lb=e.loaded;}
+    };
+    x.onload=function(){var now=performance.now();addB(bytes-prev);res(bytes/Math.max(.05,(now-(t0||now-500))/1000));};
+    x.onerror=x.ontimeout=function(){rej(new Error('envoi'));};
+    x.send(new Uint8Array(bytes));
+  });
+}
+var busy=false,liveOn=false,liveT=0;
+function lock(b){busy=b;$('go').disabled=b;}
+async function full(){
+  if(busy||liveOn)return;lock(true);
+  try{
+    phase('Mesure de la latence…');var l=await ping();$('ping').textContent=Math.round(l);
+    dir('en réception');phase('Téléchargement en cours…');var d=await down(+$('size').value,9000);gauge(d);spark(d);
+    dir('en envoi');phase('Envoi en cours…');var u=await up(Math.max(1e6,Math.min(5e6,+$('size').value/2)));gauge(u);$('up').textContent=rs(u);
+    dir('en réception');gauge(d);
+    phase('Terminé : '+rs(d)+' en réception, '+rs(u)+' en envoi.');
+  }catch(e){phase('Test impossible. Vérifiez la connexion et ouvrez ce fichier dans Chrome ou Safari, pas dans l’aperçu du chat.',true);}
+  save();lock(false);
+}
+$('go').onclick=full;
+async function liveStep(){
+  if(!liveOn)return;
+  if(busy){liveT=setTimeout(liveStep,1000);return;}
+  busy=true;dir('en réception');
+  try{var d=await down(1e6,6000);gauge(d);spark(d);phase('Mesure continue : 1 Mo toutes les '+$('every').value+' s.');}
+  catch(e){phase('Mesure impossible pour le moment.',true);}
+  save();busy=false;
+  if(liveOn)liveT=setTimeout(liveStep,(+$('every').value)*1000);
+}
+$('live').onclick=function(){
+  var b=$('live');
+  if(liveOn){liveOn=false;clearTimeout(liveT);b.className='btn';b.textContent='Mesure continue';phase('Mesure continue arrêtée.');return;}
+  liveOn=true;b.className='btn live';b.textContent='Arrêter la mesure';liveStep();
+};
+
+/* Trafic réel du PC, lu par l'agent */
+var NATIVE=!!(window.ConsAppNative&&window.ConsAppNative.stats);
+var R={on:false,last:null,timer:0,rx:0,tx:0,names:'',beat:0,stop:false};
+$('agent').value=location.protocol.indexOf('http')===0?location.origin:'http://127.0.0.1:8765';
+$('rB').textContent=fmtB(S.real);$('wTot').textContent=fmtB(S.real);
+function rnote(t,err){var n=$('rnote');n.textContent=t;n.style.color=err?'var(--c)':'';}
+async function poll(){
+  if(!R.on)return;
+  R.beat=Date.now();
+  try{
+    var j=NATIVE?JSON.parse(window.ConsAppNative.stats()):await (await fetch($('agent').value.replace(/\/+$/,'')+'/stats',{cache:'no-store'})).json(),names=Object.keys(j.ifaces),key=names.join('|');
+    if(key!==R.names){
+      R.names=key;var cur=$('ifc').value;
+      $('ifc').innerHTML=(NATIVE?'':'<option value="">Toutes les cartes</option>')+names.map(function(n){return '<option>'+esc(n)+'</option>';}).join('');
+      if(cur&&names.indexOf(cur)>=0)$('ifc').value=cur;else if(NATIVE&&names.indexOf('Tout le téléphone')>=0)$('ifc').value='Tout le téléphone';
+    }
+    if(j.wifi&&!R.auto&&names.indexOf(j.wifi)>=0){R.auto=1;$('ifc').value=j.wifi;}
+    $('wnote').style.display='none';PCW={wifi:!!j.wifi,ssid:j.ssid||''};$('wname').textContent=j.wifi?(j.ssid?'· '+j.ssid:'· '+j.wifi):'';
+    var sel=$('ifc').value,rx=0,tx=0;
+    (sel&&j.ifaces[sel]?[sel]:names).forEach(function(n){rx+=j.ifaces[n].rx;tx+=j.ifaces[n].tx;});
+    if(R.last&&j.t>R.last.t){
+      var dt=j.t-R.last.t,dr=Math.max(0,rx-R.last.rx),dx=Math.max(0,tx-R.last.tx);
+      S.real+=dr+dx;R.rx=dr/dt;R.tx=dx/dt;
+      $('rRx').textContent=rs(R.rx);$('rTx').textContent=rs(R.tx);$('rB').textContent=fmtB(S.real);
+      $('wRx').textContent=rs(R.rx);$('wTx').textContent=rs(R.tx);$('wTot').textContent=fmtB(S.real);
+      if(!busy&&!liveOn){dir('en réception, réel');gauge(R.rx);phase('Suivi en temps réel : la vitesse varie selon ce qui se télécharge.');}
+      spark(R.rx,true);showData();save();
+    }
+    R.last={t:j.t,rx:rx,tx:tx};
+    rnote('Valeurs réelles lues sur les compteurs réseau, toutes applications comprises.');
+  }catch(e){R.last=null;rnote('Mesure réelle indisponible ici. Sur téléphone, utilisez l’application installée. Sur PC, lancez consappmo_agent.py.',true);}
+  if(R.on)R.timer=setTimeout(poll,R.last?1000:4000);
+}
+$('ifc').onchange=function(){R.last=null;};
+$('rbtn').onclick=function(){
+  var b=$('rbtn');
+  if(R.on){R.stop=true;R.on=false;clearTimeout(R.timer);R.last=null;sp.length=0;b.className='btn main';b.textContent='Suivre le trafic réel';rnote('Suivi arrêté.');return;}
+  R.stop=false;R.on=true;sp.length=0;b.className='btn live';b.textContent='Arrêter le suivi';rnote('Connexion à l’agent…');poll();
+};
+
+if(!NATIVE)setTimeout(function(){if(!R.on)$('rbtn').onclick();},300);
+function keepAlive(){
+  if(R.stop)return;
+  if(!R.on){$('rbtn').onclick();return;}
+  if(Date.now()-R.beat>5000){clearTimeout(R.timer);poll();}
+}
+setInterval(keepAlive,2000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden){R.last=null;keepAlive();}});
+if(NATIVE){$('adv').style.display='none';rnote('Lecture des compteurs réels du téléphone.');setTimeout(function(){$('rbtn').onclick();},300);}
+
+/* Consommation manuelle (compteur du téléphone) */
+function toMo(v,u){return u==='Go'?v*1000:v;}
+function say(t,e){var m=$('msg');m.textContent=t;m.style.color=e?'var(--c)':'';}
+function renderQ(){
+  var map={},used=0;
+  S.entries.forEach(function(e){used+=e.mo;map[e.dev]=(map[e.dev]||0)+e.mo;});
+  var names=Object.keys(map).sort(function(a,b){return map[b]-map[a];});
+  var mx=names.length?map[names[0]]:1;
+  $('src').innerHTML=names.length?names.map(function(n){return '<div class="src"><div><span>'+esc(n)+'</span><b>'+fmtB(map[n]*1e6)+'</b></div><i style="width:'+Math.max(2,map[n]/mx*100)+'%;background:var(--acc)"></i></div>';}).join(''):'<p class="note" style="margin:0">Rien pour le moment. Ajoutez un appareil ou une application ci-dessous.</p>';
+  $('tot2').textContent=fmtB(used*1e6);
+  $('devs').innerHTML=names.map(function(n){return '<option value="'+esc(n)+'">';}).join('');
+  var q=toMo(S.qv,S.qu),p=q>0?used/q*100:0,st=p>=100?'var(--c)':p>=S.qa?'var(--b)':'var(--a)';
+  $('bar').style.width=Math.min(100,p)+'%';$('bar').style.setProperty('--st',st);
+  $('used').textContent=fmtB(used*1e6);$('of').textContent='sur '+fmtM(q)+' ('+Math.round(p)+' %)';
+  $('status').textContent=p>=100?'Quota dépassé de '+fmtM(used-q):'Il reste '+fmtM(q-used)+(p>=S.qa?'. Attention, le seuil d’alerte est atteint.':'.');
+}
+function render2(){
+  renderQ();
+  $('hist').innerHTML=S.entries.length?S.entries.map(function(e){
+    var d=new Date(e.t);
+    return '<li><div><b>'+fmtM(e.mo)+'</b> '+esc(e.dev)+'<small>'+d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})+' à '+pad(d.getHours())+':'+pad(d.getMinutes())+'</small></div><button data-id="'+e.id+'" aria-label="Supprimer">Supprimer</button></li>';
+  }).join(''):'<li class="note">Aucune consommation enregistrée. Ajoutez la première ci-dessus.</li>';
+}
+$('add').onclick=function(){
+  var u=$('unit').value,bf=$('bf').value.trim(),af=$('af').value.trim(),a=num($('am').value);
+  if(bf!==''&&af!==''){a=num(af)-num(bf);if(!(a>0)){say('Le compteur après doit dépasser le compteur avant.',1);return;}}
+  if(!(a>0)){say('Saisissez une quantité, ou les deux compteurs.',1);return;}
+  var dev=$('dev').value.trim()||'Appareil sans nom';
+  S.entries.unshift({id:Date.now(),t:Date.now(),dev:dev,mo:toMo(a,u)});
+  save();render2();['bf','af','am'].forEach(function(x){$(x).value='';});say('Ajouté : '+fmtM(toMo(a,u))+' pour '+dev+'.');
+};
+$('hist').onclick=function(ev){var id=ev.target.getAttribute('data-id');if(!id)return;S.entries=S.entries.filter(function(e){return String(e.id)!==id;});save();render2();};
+$('reset').onclick=function(){if(S.entries.length&&confirm('Effacer toutes les consommations ? Exportez en CSV avant si besoin.')){S.entries=[];save();render2();}};
+$('csv').onclick=function(){
+  if(!S.entries.length){say('Rien à exporter.',1);return;}
+  var r=['date;appareil;mo'].concat(S.entries.slice().reverse().map(function(e){return new Date(e.t).toISOString()+';"'+e.dev.replace(/"/g,'""')+'";'+e.mo.toFixed(1).replace('.',',');}));
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+r.join('\n')],{type:'text/csv;charset=utf-8'}));a.download='ConsAppMo.csv';document.body.appendChild(a);a.click();a.remove();
+};
+$('qv').value=S.qv;$('qu').value=S.qu;$('qa').value=S.qa;
+function setQ(){var v=num($('qv').value),a=parseInt($('qa').value,10);if(v>0)S.qv=v;S.qu=$('qu').value;if(a>0&&a<=100)S.qa=a;save();render2();}
+['qv','qu','qa'].forEach(function(x){$(x).onchange=setQ;});
+render2();
+})();
+</script>
+</body>
+</html>
